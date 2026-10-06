@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.xxxviom.twa",
-        "sha256_cert_fingerprints": ["8E:C8:B6:03:56:5F:FF:D1:C6:F9:7C:C6:C1:D3:22:7D:9E:3C:AA:91:6B:C5:16:FF:BE:85:B2:C1:70:31:07:A8"]
+        "sha256_cert_fingerprints": ["4F:C7:7F:F9:F6:D1:65:99:6D:99:98:A5:E3:32:1C:D1:9B:E6:4E:25:5F:6D:38:39:B2:CB:42:E8:A9:7D:EE:39"]
       }
     }]
