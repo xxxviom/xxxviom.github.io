@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.xxxviom.twa",
+        "sha256_cert_fingerprints": ["EE:7C:70:F0:53:5E:A4:47:5A:C8:A9:10:19:E3:2F:1F:00:D9:7D:7A:B8:D9:6A:54:30:07:C1:DA:F0:FD:1B:7E"]
+      }
+    }]
