@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f2a43"><link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>База ПС</title>
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--ink:#12212f;--mut:#5d7083;--acc:#0f5f9c;--line:#d9e2ea;--ph:#e4ecf3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1722;--card:#13273a;--ink:#e6eef5;--mut:#8fa5b8;--acc:#6bb6f0;--line:#223a50;--ph:#1a3248}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 14px;border-bottom:1px solid var(--line);z-index:2}
+header a{color:var(--acc);text-decoration:none;font-weight:600;font-size:14px}
+h1{font-size:19px;margin:4px 0 8px}
+input{width:100%;font:inherit;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.f{display:flex;gap:6px;overflow-x:auto;margin-top:8px;padding-bottom:2px}
+.f button{flex:none;font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border:1.5px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink)}
+.f button.on{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+#cnt{font-size:13px;color:var(--mut);margin-top:6px}
+main{max-width:760px;margin:0 auto;padding:10px 14px 30px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.p{aspect-ratio:16/9;background:var(--ph);display:grid;place-items:center;font-size:40px;color:var(--mut)}
+.p img{width:100%;height:100%;object-fit:cover;display:block}
+.b{padding:12px 14px}
+.tt{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.n{font-weight:700;font-size:17px}
+.cd{font:700 14px ui-monospace,Menlo,monospace;background:var(--acc);color:var(--bg);border-radius:6px;padding:3px 7px;flex:none}
+.w{display:inline-block;font-size:12px;font-weight:700;border:1.5px solid var(--acc);color:var(--acc);border-radius:6px;padding:1px 6px;margin-top:6px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin:10px 0;font-size:14px}
+.g div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line);padding:2px 0}.g .k span:last-child{font-weight:700;text-align:right}.g span:first-child{color:var(--mut)}
+.b a{color:var(--acc);font-size:14px;font-weight:600}
+.em{text-align:center;color:var(--mut);padding:30px 0}
+.ft{font-size:12px;color:var(--mut);margin-top:14px}
+.r{display:flex;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:8px}.r .th{width:64px;height:48px;flex:none;border-radius:6px;background:var(--ph);display:grid;place-items:center;overflow:hidden}.r img{width:100%;height:100%;object-fit:cover}.r small{display:block;color:var(--mut);font-size:13px}.sec{font-size:14px;color:var(--mut);margin:16px 0 8px}.bk{display:inline-block;margin-bottom:10px;color:var(--acc);font-weight:600;text-decoration:none}select{width:100%;font:inherit;padding:8px;margin:8px 0;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}.sb{font-size:13px;color:var(--mut)}.lk{display:flex;gap:16px;flex-wrap:wrap}.g+.g{margin-top:0;border-top:1px solid var(--line);padding-top:8px}[hidden]{display:none!important}
+</style><link rel="stylesheet" href="ui.css"></head><body>
+<header><a href="index.html">‹ Меню</a><h1>База ПС</h1>
+<input id="q" type="search" placeholder="Тип ПС: A320, Су-27, Mi-8, Reaper…" autocomplete="off">
+<div class="f" id="f"></div><div id="cnt"></div></header>
+<main id="m"></main><main id="det" hidden></main>
+<script>
+// код|назва|стаття Wikipedia|кат|WTC|двигуни|розмах м|довжина м|MTOW т|крейс.|дальність км|місць
+const R=`A318|Airbus A318|Airbus_A318|j|M|2×ТРДД|34.1|31.4|68|M0.78|7800|107|390|39100|23860
+A319|Airbus A319|Airbus_A319|j|M|2×ТРДД|34.1|33.8|75.5|M0.78|6900|124|390|39100|23860
+A320|Airbus A320|Airbus_A320_family|j|M|2×ТРДД|34.1|37.6|78|M0.78|6150|150|390|39100|24210
+A321|Airbus A321|Airbus_A321|j|M|2×ТРДД|34.1|44.5|93.5|M0.78|5950|185|390|39100|23500
+A19N|Airbus A319neo|Airbus_A320neo_family|j|M|2×ТРДД|35.8|33.8|75.5|M0.78|6850|140|390|39800|23860
+A20N|Airbus A320neo|Airbus_A320neo_family|j|M|2×ТРДД|35.8|37.6|79|M0.78|6500|165|390|39800|26730
+A21N|Airbus A321neo|Airbus_A321neo|j|M|2×ТРДД|35.8|44.5|97|M0.78|7400|200|390|39800|23500
+BCS1|Airbus A220-100|Airbus_A220|j|M|2×ТРДД|35.1|35|63|M0.82|6700|108|390|41000|21500
+BCS3|Airbus A220-300|Airbus_A220|j|M|2×ТРДД|35.1|38.7|70.9|M0.82|6700|130|390|41000|21500
+A306|Airbus A300-600|Airbus_A300|j|H|2×ТРДД|44.8|54.1|171.7|M0.80|7500|266|370|40000|62000
+A310|Airbus A310|Airbus_A310|j|H|2×ТРДД|43.9|46.7|164|M0.80|9600|220|370|41000|61000
+A332|Airbus A330-200|Airbus_A330|j|H|2×ТРДД|60.3|58.8|242|M0.82|13450|247|370|41450|139090
+A333|Airbus A330-300|Airbus_A330|j|H|2×ТРДД|60.3|63.7|242|M0.82|11750|300|370|41450|97530
+A339|Airbus A330-900neo|Airbus_A330neo|j|H|2×ТРДД|64|63.7|251|M0.82|12130|287|370|41450|139090
+A343|Airbus A340-300|Airbus_A340|j|H|4×ТРДД|60.3|63.7|276.5|M0.82|13500|295|370|41450|141500
+A346|Airbus A340-600|Airbus_A340|j|H|4×ТРДД|63.5|75.4|380|M0.82|13900|380|370|41450|195620
+A359|Airbus A350-900|Airbus_A350|j|H|2×ТРДД|64.7|66.8|283|M0.85|15000|325|400|43100|141000
+A35K|Airbus A350-1000|Airbus_A350|j|H|2×ТРДД|64.7|73.8|319|M0.85|16100|366|400|43100|158000
+A388|Airbus A380-800|Airbus_A380|j|J|4×ТРДД|79.8|72.7|575|M0.85|15200|525|390|43000|320000
+B712|Boeing 717-200|Boeing_717|j|M|2×ТРДД|28.4|37.8|54.9|M0.77|2645|106|350|37000|13700
+B733|Boeing 737-300|Boeing_737_Classic|j|M|2×ТРДД|28.9|33.4|62.8|M0.74|4200|140|350|37000|20100
+B734|Boeing 737-400|Boeing_737_Classic|j|M|2×ТРДД|28.9|36.4|68|M0.74|4000|168|350|37000|20100
+B735|Boeing 737-500|Boeing_737_Classic|j|M|2×ТРДД|28.9|31|60.5|M0.74|4400|132|350|37000|20100
+B736|Boeing 737-600|Boeing_737_Next_Generation|j|M|2×ТРДД|34.3|31.2|65.5|M0.78|5650|110|370|41000|26020
+B737|Boeing 737-700|Boeing_737_Next_Generation|j|M|2×ТРДД|34.3|33.6|70.1|M0.78|6100|126|370|41000|26020
+B738|Boeing 737-800|Boeing_737_Next_Generation|j|M|2×ТРДД|34.3|39.5|79|M0.78|5400|162|370|41000|26020
+B739|Boeing 737-900|Boeing_737_Next_Generation|j|M|2×ТРДД|34.3|42.1|79|M0.78|5000|177|370|41000|26020
+B37M|Boeing 737 MAX 7|Boeing_737_MAX|j|M|2×ТРДД|35.9|35.6|80.3|M0.79|7000|138|370|41000|25816
+B38M|Boeing 737 MAX 8|Boeing_737_MAX|j|M|2×ТРДД|35.9|39.5|82.2|M0.79|6500|162|370|41000|25816
+B39M|Boeing 737 MAX 9|Boeing_737_MAX|j|M|2×ТРДД|35.9|42.2|88.3|M0.79|6570|178|370|41000|25816
+B3XM|Boeing 737 MAX 10|Boeing_737_MAX|j|M|2×ТРДД|35.9|43.8|90.3|M0.79|6100|188|370|41000|25816
+B752|Boeing 757-200|Boeing_757|j|M|2×ТРДД|38|47.3|115.7|M0.80|7250|200|370|42000|43500
+B753|Boeing 757-300|Boeing_757|j|M|2×ТРДД|38|54.4|122.4|M0.80|6000|243|370|42000|43500
+B762|Boeing 767-200|Boeing_767|j|H|2×ТРДД|47.6|48.5|142|M0.80|7600|216|370|43100|63000
+B763|Boeing 767-300|Boeing_767|j|H|2×ТРДД|47.6|54.9|186.9|M0.80|7800|269|370|43100|91380
+B764|Boeing 767-400ER|Boeing_767|j|H|2×ТРДД|51.9|61.4|204|M0.80|10400|245|370|43100|91380
+B772|Boeing 777-200ER|Boeing_777|j|H|2×ТРДД|60.9|63.7|297.6|M0.84|13080|301|370|43100|171160
+B77L|Boeing 777-200LR|Boeing_777|j|H|2×ТРДД|64.8|63.7|347.5|M0.84|15840|301|370|43100|202290
+B773|Boeing 777-300|Boeing_777|j|H|2×ТРДД|60.9|73.9|299.3|M0.84|11120|368|370|43100|171160
+B77W|Boeing 777-300ER|Boeing_777|j|H|2×ТРДД|64.8|73.9|351.5|M0.84|13650|396|370|43100|181280
+B778|Boeing 777-8|Boeing_777X|j|H|2×ТРДД|71.8|69.5|351.5|M0.84|16170|384|390|43100|197977
+B779|Boeing 777-9|Boeing_777X|j|H|2×ТРДД|71.8|76.7|351.5|M0.84|13500|426|390|43100|197977
+B744|Boeing 747-400|Boeing_747-400|j|H|4×ТРДД|64.4|70.7|396.9|M0.85|13450|416|370|45100|216840
+B748|Boeing 747-8|Boeing_747-8|j|H|4×ТРДД|68.4|76.3|447.7|M0.855|14815|410|370|43100|238000
+B788|Boeing 787-8|Boeing_787_Dreamliner|j|H|2×ТРДД|60.1|56.7|227.9|M0.85|13530|242|390|43100|126206
+B789|Boeing 787-9|Boeing_787_Dreamliner|j|H|2×ТРДД|60.1|62.8|254|M0.85|14010|290|390|43100|126372
+B78X|Boeing 787-10|Boeing_787_Dreamliner|j|H|2×ТРДД|60.1|68.3|254|M0.85|11750|330|390|43100|126372
+MD11|McDonnell Douglas MD-11|McDonnell_Douglas_MD-11|j|H|3×ТРДД|51.7|61.6|273|M0.82|12670|293|350|42000|146170
+DC10|McDonnell Douglas DC-10|McDonnell_Douglas_DC-10|j|H|3×ТРДД|50.4|55.5|251|M0.82|9900|270|350|42000|138000
+MD82|McDonnell Douglas MD-82|McDonnell_Douglas_MD-80|j|M|2×ТРДД|32.9|45.1|67.8|M0.76|3800|155|330|37000|22100
+MD83|McDonnell Douglas MD-83|McDonnell_Douglas_MD-80|j|M|2×ТРДД|32.9|45.1|72.6|M0.76|4635|155|330|37000|26500
+MD90|McDonnell Douglas MD-90|McDonnell_Douglas_MD-90|j|M|2×ТРДД|32.9|46.5|70.8|M0.76|3787|160|330|37000|22100
+E170|Embraer E170|Embraer_E-Jet_family|j|M|2×ТРДД|26|29.9|37.2|M0.78|3980|72|370|41000|9335
+E75L|Embraer E175|Embraer_E-Jet_family|j|M|2×ТРДД|26|31.7|38.8|M0.78|4000|78|370|41000|9335
+E190|Embraer E190|Embraer_E-Jet_family|j|M|2×ТРДД|28.7|36.2|51.8|M0.78|4500|100|370|41000|13000
+E195|Embraer E195|Embraer_E-Jet_family|j|M|2×ТРДД|28.7|38.7|52.3|M0.78|4260|116|370|41000|13000
+E290|Embraer E190-E2|Embraer_E-Jet_E2_family|j|M|2×ТРДД|33.7|36.2|56.4|M0.78|5278|106|370|41000|13000
+E295|Embraer E195-E2|Embraer_E-Jet_E2_family|j|M|2×ТРДД|33.7|41.5|61.5|M0.78|4815|132|370|41000|13000
+E145|Embraer ERJ-145|Embraer_ERJ_family|j|M|2×ТРДД|20|29.9|22|M0.70|2900|50|350|37000|5000
+CRJ2|Bombardier CRJ-200|Bombardier_CRJ200|j|M|2×ТРДД|21.2|26.8|24|M0.74|3000|50|370|41000|6000
+CRJ7|Bombardier CRJ-700|Bombardier_CRJ700_series|j|M|2×ТРДД|23.2|32.5|34|M0.78|3000|70|370|41000|8400
+CRJ9|Bombardier CRJ-900|Bombardier_CRJ700_series|j|M|2×ТРДД|24.9|36.2|38|M0.78|2800|90|370|41000|8400
+SU95|Sukhoi Superjet 100|Sukhoi_Superjet_100|j|M|2×ТРДД|27.8|29.9|49.5|M0.78|4578|98|370|40000|15800
+C919|COMAC C919|Comac_C919|j|M|2×ТРДД|35.8|38.9|79|M0.785|5555|158|390|39700|20000
+T154|Tupolev Tu-154M|Tupolev_Tu-154|j|M|3×ТРДД|37.6|47.9|100|900 км/год|3900|164|330|39700|49000
+A148|Antonov An-148|Antonov_An-148|j|M|2×ТРДД|28.9|29.1|38.1|835 км/год|3500|75|330|40000|12500
+IL96|Ilyushin Il-96-300|Ilyushin_Il-96|j|H|4×ТРДД|60.1|55.3|250|850 км/год|11500|300|350|39400|146000
+AT72|ATR 72-600|ATR_72|t|M|2×ТВГД|27.1|27.2|23|510 км/год|1500|72|250|25000|5000
+AT46|ATR 42-600|ATR_42|t|M|2×ТВГД|24.6|22.7|18.6|556 км/год|1300|48|250|25000|4500
+DH8D|De Havilland Dash 8 Q400|De_Havilland_Canada_Dash_8|t|M|2×ТВГД|28.4|32.8|29.3|667 км/год|2000|78|250|27000|5300
+DH8C|De Havilland Dash 8 Q300|De_Havilland_Canada_Dash_8|t|M|2×ТВГД|27.4|25.7|19.5|528 км/год|1500|50|240|25000|3160
+SF34|Saab 340|Saab_340|t|M|2×ТВГД|21.4|19.7|13.2|467 км/год|1500|34|250|25000|3000
+SB20|Saab 2000|Saab_2000|t|M|2×ТВГД|24.8|27.3|23|665 км/год|2900|50|310|31000|5400
+JS41|BAe Jetstream 41|British_Aerospace_Jetstream_41|t|M|2×ТВГД|18.3|19.3|10.9|482 км/год|1260|29|260|26000|3500
+AN24|Antonov An-24|Antonov_An-24|t|M|2×ТВГД|29.2|23.5|21|450 км/год|2400|50|220|27500|5500
+AN26|Antonov An-26|Antonov_An-26|t|M|2×ТВГД|29.2|23.8|24|440 км/год|2600|38|220|24500|5500
+BE20|Beechcraft King Air 200|Beechcraft_Super_King_Air|t|L|2×ТВГД|16.6|13.3|5.67|540 км/год|2700|8|300|35000|2060
+B350|Beechcraft King Air 350|Beechcraft_Super_King_Air|t|L|2×ТВГД|17.7|14.2|6.8|578 км/год|3300|9|300|35000|2060
+PC12|Pilatus PC-12|Pilatus_PC-12|t|L|1×ТВГД|16.3|14.4|4.7|528 км/год|3400|9|280|30000|1200
+C208|Cessna 208 Caravan|Cessna_208_Caravan|t|L|1×ТВГД|15.9|11.5|3.99|340 км/год|1980|9|180|25000|1270
+TBM9|Daher TBM 900|Daher_TBM|t|L|1×ТВГД|12.8|10.7|3.35|600 км/год|2800|6|280|31000|1000
+GLF4|Gulfstream IV|Gulfstream_IV|b|M|2×ТРДД|23.7|26.9|33.7|M0.80|7800|14|450|45000|16700
+GLF5|Gulfstream V|Gulfstream_V|b|M|2×ТРДД|28.5|29.4|41.2|M0.85|11000|16|450|51000|23000
+GLF6|Gulfstream G650|Gulfstream_G650|b|M|2×ТРДД|30.4|30.4|45.2|M0.925|13890|19|510|51000|25000
+GL5T|Bombardier Global 5000|Bombardier_Global_5000|b|M|2×ТРДД|28.7|29.5|41.9|M0.85|9630|16|450|51000|20000
+GLEX|Bombardier Global Express|Bombardier_Global_Express|b|M|2×ТРДД|28.7|30.3|44.5|M0.85|11000|14|450|51000|22000
+CL60|Bombardier Challenger 600|Bombardier_Challenger_600_series|b|M|2×ТРДД|19.6|20.9|21.8|M0.80|7400|12|410|41000|9000
+LJ45|Learjet 45|Learjet_45|b|M|2×ТРДД|14.6|17.7|9.8|M0.78|3700|8|450|51000|3500
+F2TH|Dassault Falcon 2000|Dassault_Falcon_2000|b|M|2×ТРДД|21.4|20.2|16.2|M0.80|5600|10|430|47000|6500
+FA7X|Dassault Falcon 7X|Dassault_Falcon_7X|b|M|3×ТРДД|26.2|23.4|31.8|M0.85|11000|14|450|51000|11500
+E55P|Embraer Phenom 300|Embraer_Phenom_300|b|M|2×ТРДД|15.9|15.6|8.1|M0.78|3650|9|450|45000|2800
+C172|Cessna 172|Cessna_172|g|L|1×ПД|11|8.3|1.1|226 км/год|1290|4|80|14000|212
+PA28|Piper PA-28 Cherokee|Piper_PA-28_Cherokee|g|L|1×ПД|10.7|7.2|1.1|230 км/год|1000|4|80|14000|189
+SR22|Cirrus SR22|Cirrus_SR22|g|L|1×ПД|11.7|7.9|1.5|340 км/год|2000|4|120|17500|340
+DA40|Diamond DA40|Diamond_DA40|g|L|1×ПД|11.9|8.1|1.2|280 км/год|1150|4|80|16400|150
+C130|Lockheed C-130 Hercules|Lockheed_C-130_Hercules|m|M|4×ТВГД|40.4|29.8|70.3|556 км/год|3800|—|220|33000|26350
+C17|Boeing C-17 Globemaster III|Boeing_C-17_Globemaster_III|m|H|4×ТРДД|51.7|53|265|M0.77|4480|—|350|45000|134500
+A400|Airbus A400M Atlas|Airbus_A400M_Atlas|m|H|4×ТВГД|42.4|45.1|141|M0.72|3300|—|310|37000|-
+AN12|Antonov An-12|Antonov_An-12|m|M|4×ТВГД|38|33.1|61|600 км/год|5700|—|200|33500|-
+IL76|Ilyushin Il-76|Ilyushin_Il-76|m|H|4×ТРДД|50.5|46.6|190|800 км/год|4400|—|350|39400|109500
+A124|Antonov An-124 Ruslan|Antonov_An-124_Ruslan|m|H|4×ТРДД|73.3|69.1|405|800 км/год|4800|—|350|39400|-
+F22|Lockheed Martin F-22 Raptor|Lockheed_Martin_F-22_Raptor|f|M|2×ТРДД|13.6|18.9|38|M2.25|2960|1|-|65000|10000
+F35|Lockheed Martin F-35A Lightning II|Lockheed_Martin_F-35_Lightning_II|f|M|1×ТРДД|10.7|15.7|31.8|M1.6|2800|1|-|50000|10300
+F16|General Dynamics F-16C Fighting Falcon|General_Dynamics_F-16_Fighting_Falcon|f|M|1×ТРДД|9.96|15.1|19.2|M2.0|4200|1|-|50000|3900
+F15|McDonnell Douglas F-15C Eagle|McDonnell_Douglas_F-15_Eagle|f|M|2×ТРДД|13.1|19.4|30.8|M2.5|5600|1|-|65000|7800
+F15E|McDonnell Douglas F-15E Strike Eagle|McDonnell_Douglas_F-15E_Strike_Eagle|f|M|2×ТРДД|13.1|19.4|36.7|M2.5|3900|2|-|60000|7800
+F18|McDonnell Douglas F/A-18C Hornet|McDonnell_Douglas_F/A-18_Hornet|f|M|2×ТРДД|12.3|17.1|23.5|M1.8|3300|1|-|50000|6000
+F18S|Boeing F/A-18E Super Hornet|Boeing_F/A-18E/F_Super_Hornet|f|M|2×ТРДД|13.6|18.3|29.9|M1.8|3300|1|-|50000|8400
+F14|Grumman F-14 Tomcat|Grumman_F-14_Tomcat|f|M|2×ТРДД|19.5|19.1|33.7|M2.34|2960|2|-|50000|9200
+F4|McDonnell Douglas F-4 Phantom II|McDonnell_Douglas_F-4_Phantom_II|f|M|2×ТРД|11.7|19.2|28|M2.23|2600|2|-|60000|7500
+F5|Northrop F-5E Tiger II|Northrop_F-5|f|M|2×ТРД|8.1|14.5|11.2|M1.6|2600|1|-|51800|2500
+A10|Fairchild Republic A-10C Thunderbolt II|Fairchild_Republic_A-10_Thunderbolt_II|f|M|2×ТРДД|17.5|16.3|23|706 км/год|4150|1|-|45000|6200
+EUFI|Eurofighter Typhoon|Eurofighter_Typhoon|f|M|2×ТРДД|10.95|16|23.5|M2.0|3790|1|-|55000|6200
+RFAL|Dassault Rafale|Dassault_Rafale|f|M|2×ТРДД|10.8|15.3|24.5|M1.8|3700|1|-|50000|5900
+GRIF|Saab JAS 39 Gripen C|Saab_JAS_39_Gripen|f|M|1×ТРДД|8.4|14.1|14|M2.0|3200|1|-|50000|3400
+M2K|Dassault Mirage 2000|Dassault_Mirage_2000|f|M|1×ТРДД|9.1|14.4|17|M2.2|3335|1|-|59000|3500
+TOR|Panavia Tornado|Panavia_Tornado|f|M|2×ТРДД|13.9|16.7|28|M2.2|3890|2|-|50000|-
+MG21|МіГ-21бис|Mikoyan-Gurevich_MiG-21|f|M|1×ТРД|7.15|15.8|9.4|M2.05|1300|1|-|57400|2900
+MG29|МіГ-29|Mikoyan_MiG-29|f|M|2×ТРДД|11.4|17.3|18.5|M2.25|2100|1|-|59000|4300
+MG31|МіГ-31|Mikoyan_MiG-31|f|M|2×ТРДД|13.5|22.7|46.2|M2.83|3000|2|-|67600|20000
+SU24|Су-24М|Sukhoi_Su-24|f|M|2×ТРДД|10.4|22.6|39.7|M1.35|2500|2|-|54000|14000
+SU25|Су-25|Sukhoi_Su-25|f|M|2×ТРД|14.4|15.5|17.6|975 км/год|1250|1|-|23000|3800
+SU27|Су-27|Sukhoi_Su-27|f|M|2×ТРДД|14.7|21.9|33|M2.35|3530|1|-|59000|11800
+SU30|Су-30|Sukhoi_Su-30|f|M|2×ТРДД|14.7|21.9|38|M2.0|3000|2|-|56800|11800
+SU34|Су-34|Sukhoi_Su-34|f|M|2×ТРДД|14.7|23.3|45.1|M1.8|4000|2|-|49000|15000
+SU35|Су-35|Sukhoi_Su-35|f|M|2×ТРДД|15.3|21.9|34.5|M2.25|3600|1|-|59000|14400
+SU57|Су-57|Sukhoi_Su-57|f|M|2×ТРДД|14.1|20.1|35|M2.0|3500|1|-|65000|-
+B52|Boeing B-52H Stratofortress|Boeing_B-52_Stratofortress|p|H|8×ТРДД|56.4|48.5|220|M0.84|14000|5|350|50000|177000
+B1|Rockwell B-1B Lancer|Rockwell_B-1_Lancer|p|H|4×ТРДД|41.7|44.5|216|M1.25|9400|4|-|30000|107000
+B2|Northrop B-2 Spirit|Northrop_Grumman_B-2_Spirit|p|H|4×ТРДД|52.4|21|171|M0.95|11100|2|-|50000|94000
+TU95|Ту-95МС|Tupolev_Tu-95|p|H|4×ТВГД|50.1|49.5|188|830 км/год|15000|7|-|39400|90000
+T22M|Ту-22М3|Tupolev_Tu-22M|p|H|2×ТРДД|34.3|42.5|126|M2.05|6800|4|-|43600|-
+T160|Ту-160|Tupolev_Tu-160|p|H|4×ТРДД|55.7|54.1|275|M2.05|12300|4|-|49200|185000
+MQ9|General Atomics MQ-9 Reaper|General_Atomics_MQ-9_Reaper|u|L|1×ТВГД|20|11|4.76|313 км/год|1850|—|-|50000|2280
+MQ1|General Atomics MQ-1 Predator|General_Atomics_MQ-1_Predator|u|L|1×ПД|16.8|8.2|1.04|217 км/год|1100|—|-|25000|-
+Q4|Northrop Grumman RQ-4 Global Hawk|Northrop_Grumman_RQ-4_Global_Hawk|u|M|1×ТРДД|39.9|14.5|14.6|575 км/год|22800|—|-|60000|-
+TB2|Baykar Bayraktar TB2|Bayraktar_TB2|u|L|1×ПД|12|6.5|0.7|130 км/год|150|—|-|25000|300
+SH36|Shahed-136 (Geran-2)|HESA_Shahed_136|u|L|1×ПД|2.5|3.5|0.2|185 км/год|2000|—|-|-|-
+K35R|Boeing KC-135R Stratotanker|Boeing_KC-135_Stratotanker|m|H|4×ТРДД|39.9|41.5|146|M0.8|2400|3|350|50000|114000
+A332|Airbus A330 MRTT|Airbus_A330_MRTT|m|H|2×ТРДД|60.3|58.8|233|M0.82|14800|2|370|41000|139000
+E3TF|Boeing E-3 Sentry (AWACS)|Boeing_E-3_Sentry|m|H|4×ТРДД|44.4|46.6|147|855 км/год|7400|17|-|42000|-
+P8|Boeing P-8 Poseidon|Boeing_P-8_Poseidon|m|M|2×ТРДД|37.6|39.5|85.8|907 км/год|7500|9|-|41000|-
+P3|Lockheed P-3 Orion|Lockheed_P-3_Orion|m|M|4×ТВГД|30.4|35.6|61.2|750 км/год|4400|11|-|28300|34800
+E2|Northrop Grumman E-2D Hawkeye|Northrop_Grumman_E-2_Hawkeye|m|M|2×ТВГД|24.6|17.6|26|650 км/год|2700|5|-|37000|-
+IL78|Іл-78|Ilyushin_Il-78|m|H|4×ТРДД|50.5|46.6|210|850 км/год|7300|5|-|39400|-
+A50|А-50 (AWACS)|Beriev_A-50|m|H|4×ТРДД|50.5|46.6|190|800 км/год|4000|15|-|39400|-
+C5|Lockheed C-5M Super Galaxy|Lockheed_C-5_Galaxy|m|H|4×ТРДД|67.9|75.3|381|M0.79|7000|7|350|41000|193000
+C30J|Lockheed Martin C-130J Super Hercules|Lockheed_Martin_C-130J_Super_Hercules|m|M|4×ТВГД|40.4|29.8|74.4|670 км/год|3300|3|220|28000|26000
+C295|Airbus C295|Airbus_C295|m|M|2×ТВГД|25.8|24.5|23.2|480 км/год|5630|3|-|25000|-
+AN32|Антонов Ан-32|Antonov_An-32|m|M|2×ТВГД|29.2|23.8|27|480 км/год|2500|3|-|31000|-
+AN72|Антонов Ан-72|Antonov_An-72|m|M|2×ТРДД|31.9|28.1|34.5|600 км/год|4325|3|-|38700|-
+MI8|Мі-8 / Мі-17|Mil_Mi-8|h|M|2×ТВаД|21.3|25.3|13|250 км/год|580|3+24|-|19700|-
+MI24|Мі-24|Mil_Mi-24|h|M|2×ТВаД|17.3|21.4|12.5|335 км/год|450|2+8|-|14800|-
+MI26|Мі-26|Mil_Mi-26|h|H|2×ТВаД|32|40|56|295 км/год|800|5+90|-|15100|-
+MI28|Мі-28|Mil_Mi-28|h|M|2×ТВаД|17.2|21|11.6|300 км/год|450|2|-|19000|-
+KA52|Ка-52 Алігатор|Kamov_Ka-52|h|M|2×ТВаД|14.5|16|10.8|300 км/год|520|2|-|18000|-
+KA27|Ка-27|Kamov_Ka-27|h|M|2×ТВаД|15.9|12.3|12|270 км/год|800|3|-|16400|-
+MI2|Мі-2|Mil_Mi-2|h|L|2×ТВаД|14.5|17.4|3.7|210 км/год|580|1+8|-|13100|-
+H60|Sikorsky UH-60 Black Hawk|Sikorsky_UH-60_Black_Hawk|h|M|2×ТВаД|16.4|19.8|10.6|295 км/год|590|4+11|-|19000|1360
+H47|Boeing CH-47F Chinook|Boeing_CH-47_Chinook|h|H|2×ТВаД|18.3|30.1|24.5|315 км/год|740|3+33|-|20000|3900
+H64|Boeing AH-64 Apache|Boeing_AH-64_Apache|h|M|2×ТВаД|14.6|17.7|10.4|293 км/год|480|2|-|20000|1420
+H53|Sikorsky CH-53K King Stallion|Sikorsky_CH-53K_King_Stallion|h|H|3×ТВаД|24.1|30.2|39.9|315 км/год|840|3+30|-|18500|-
+V22|Bell Boeing V-22 Osprey|Bell_Boeing_V-22_Osprey|h|M|2×ТВаД|14|17.5|27.4|509 км/год|1630|4+24|-|25000|-
+S92|Sikorsky S-92|Sikorsky_S-92|h|M|2×ТВаД|17.2|20.9|12.8|306 км/год|999|2+19|-|15000|-
+EH10|AgustaWestland AW101 Merlin|AgustaWestland_AW101|h|M|3×ТВаД|18.6|22.8|15.6|309 км/год|1390|3+30|-|15000|-
+NH90|NHIndustries NH90|NHIndustries_NH90|h|M|2×ТВаД|16.3|19.6|10.6|300 км/год|800|2+20|-|19700|-
+A139|AgustaWestland AW139|AgustaWestland_AW139|h|L|2×ТВаД|13.8|16.7|6.8|306 км/год|1250|2+15|-|20000|-
+B412|Bell 412|Bell_412|h|L|2×ТВаД|14|17.1|5.4|259 км/год|650|2+13|-|17000|-
+EC45|Airbus H145|Airbus_Helicopters_H145|h|L|2×ТВаД|11|13|3.7|268 км/год|680|1+8|-|20000|-
+EC35|Airbus H135|Airbus_Helicopters_H135|h|L|2×ТВаД|10.2|12.2|2.9|254 км/год|635|1+7|-|20000|-
+AS50|Airbus H125 (AS350)|Airbus_Helicopters_H125|h|L|1×ТВаД|10.7|12.9|2.37|287 км/год|650|1+5|-|23000|540
+B407|Bell 407|Bell_407|h|L|1×ТВаД|10.7|12.7|2.27|260 км/год|610|1+6|-|18700|480
+R44|Robinson R44|Robinson_R44|h|L|1×ПД|10.1|11.7|1.09|240 км/год|560|1+3|-|14000|150
+B742|Boeing 747-200|Boeing_747|j|H|4×ТРДД|59.6|70.7|377.8|M0.84|12700|366|350|45100|198400
+B722|Boeing 727-200|Boeing_727|j|M|3×ТРДД|32.9|46.7|95.1|M0.81|4020|189|350|42000|-
+B732|Boeing 737-200|Boeing_737_Original|j|M|2×ТРДД|28.4|30.6|52.4|M0.74|4200|130|350|37000|-
+DC93|McDonnell Douglas DC-9-30|McDonnell_Douglas_DC-9|j|M|2×ТРДД|28.5|36.4|49|M0.78|2800|115|330|35000|-
+RJ85|BAe / Avro RJ85|British_Aerospace_146|j|M|4×ТРДД|26.3|28.6|42.2|M0.70|2000|85|-|35000|-
+F100|Fokker 100|Fokker_100|j|M|2×ТРДД|28.1|35.5|44.5|M0.77|3170|109|-|35000|-
+F50|Fokker 50|Fokker_50|t|M|2×ТВГД|29|25.2|20.8|500 км/год|2400|50|-|25000|-
+TU134|Ту-134|Tupolev_Tu-134|j|M|2×ТРДД|29|37.1|47.6|850 км/год|3000|76|-|39000|-
+T204|Ту-204|Tupolev_Tu-204|j|M|2×ТРДД|41.8|46.1|103|810 км/год|4300|210|-|39000|-
+IL86|Іл-86|Ilyushin_Il-86|j|H|4×ТРДД|48.1|59.5|215|M0.80|3800|350|-|-|-
+IL62|Іл-62|Ilyushin_Il-62|j|H|4×ТРДД|43.2|53.1|165|M0.80|9200|186|-|39400|-
+YK42|Як-42|Yakovlev_Yak-42|j|M|3×ТРДД|34.9|36.4|57.5|810 км/год|1800|120|-|-|-
+A140|Антонов Ан-140|Antonov_An-140|t|M|2×ТВГД|24.5|22.6|21.5|530 км/год|2000|52|-|23600|-
+L410|Let L-410 Turbolet|Let_L-410_Turbolet|t|L|2×ТВГД|19.5|14.4|6.6|380 км/год|1350|19|-|20700|-
+AN2|Антонов Ан-2|Antonov_An-2|g|L|1×ПД|18.2|12.4|5.5|190 км/год|900|12|-|14400|1200
+B190|Beechcraft 1900D|Beechcraft_1900|t|M|2×ТВГД|17.7|17.6|7.76|518 км/год|2700|19|-|25000|-
+DH8A|De Havilland Dash 8-100|De_Havilland_Canada_Dash_8|t|M|2×ТВГД|25.9|22.3|15.6|448 км/год|1900|37|-|25000|-
+MA60|Xi'an MA60|Xi'an_MA60|t|M|2×ТВГД|29.2|24.7|21.8|514 км/год|1600|56|-|25000|-
+A225|Антонов Ан-225 Мрія|Antonov_An-225_Mriya|m|H|6×ТРДД|88.4|84|640|800 км/год|15400|6|-|-|-
+AN70|Антонов Ан-70|Antonov_An-70|m|H|4×ТВГД|44.1|40.7|145|750 км/год|3000|3|-|-|-
+C27J|Alenia C-27J Spartan|Alenia_C-27J_Spartan|m|M|2×ТВГД|28.7|22.7|30.5|583 км/год|1850|3|-|30000|-
+KC10|McDonnell Douglas KC-10 Extender|McDonnell_Douglas_KC-10_Extender|m|H|3×ТРДД|50.4|55.4|267|M0.82|18500|4|-|42000|-
+KC46|Boeing KC-46 Pegasus|Boeing_KC-46_Pegasus|m|H|2×ТРДД|47.6|50.5|188|M0.80|12200|3|-|40100|-
+C390|Embraer KC-390|Embraer_KC-390|m|M|2×ТРДД|35.1|33.9|87|M0.80|6200|3|-|36000|-
+C510|Cessna Citation Mustang|Cessna_Citation_Mustang|b|L|2×ТРДД|13.2|12.4|3.9|630 км/год|2100|5|-|41000|-
+C25A|Cessna Citation CJ2|Cessna_CitationJet/CJ1|b|L|2×ТРДД|15.1|14.5|6.3|720 км/год|3000|7|-|45000|-
+C56X|Cessna Citation Excel|Cessna_Citation_Excel|b|M|2×ТРДД|17.2|16|9.1|780 км/год|3500|9|-|45000|-
+C680|Cessna Citation Sovereign|Cessna_Citation_Sovereign|b|M|2×ТРДД|19.3|19.4|13.7|M0.80|5000|9|-|47000|-
+C750|Cessna Citation X|Cessna_Citation_X|b|M|2×ТРДД|21.1|22|16.4|M0.935|6000|8|-|51000|-
+LJ60|Learjet 60|Learjet_60|b|M|2×ТРДД|13.4|17.8|10.3|M0.81|4400|8|-|51000|-
+FA50|Dassault Falcon 50|Dassault_Falcon_50|b|M|3×ТРДД|18.9|18.5|17.6|M0.80|5800|9|-|49000|-
+F900|Dassault Falcon 900|Dassault_Falcon_900|b|M|3×ТРДД|19.3|20.2|21|M0.84|7400|12|-|51000|-
+GLF7|Gulfstream G700|Gulfstream_G700|b|M|2×ТРДД|31.4|33.5|52.2|M0.925|13890|19|-|51000|-
+G280|Gulfstream G280|Gulfstream_G280|b|M|2×ТРДД|19.2|20.3|17.9|M0.85|6500|10|-|45000|-
+BE40|Beechjet 400 / Hawker 400|Hawker_400|b|M|2×ТРДД|13.3|14.8|7.3|M0.78|3100|8|-|45000|-
+H25B|Hawker 800|Hawker_800|b|M|2×ТРДД|15.7|15.6|12.4|M0.80|5000|8|-|45000|-
+PRM1|Beechcraft Premier I|Beechcraft_Premier_I|b|L|2×ТРДД|13.6|14|5.7|M0.76|2800|6|-|41000|-
+E50P|Embraer Phenom 100|Embraer_Phenom_100|b|L|2×ТРДД|12.3|12.8|4.8|720 км/год|2200|4|-|41000|-
+HDJT|Honda HondaJet|Honda_HA-420_HondaJet|b|L|2×ТРДД|12.1|13|4.8|782 км/год|2660|5|-|43000|-
+SF50|Cirrus Vision Jet SF50|Cirrus_Vision_SF50|b|L|1×ТРДД|11.8|9.4|2.7|555 км/год|2200|5|-|31000|-
+PC24|Pilatus PC-24|Pilatus_PC-24|b|M|2×ТРДД|17|16.8|8.3|815 км/год|3700|10|-|45000|-
+P180|Piaggio P.180 Avanti|Piaggio_P.180_Avanti|t|L|2×ТВГД|14|14.4|5.5|732 км/год|2800|9|-|41000|-
+C152|Cessna 152|Cessna_152|g|L|1×ПД|10.2|7.3|0.76|196 км/год|770|2|-|14700|-
+C182|Cessna 182 Skylane|Cessna_182_Skylane|g|L|1×ПД|11|8.8|1.4|270 км/год|1500|4|-|18100|330
+DA42|Diamond DA42 Twin Star|Diamond_DA42|g|L|2×ПД|13.5|8.6|1.9|365 км/год|1700|4|-|18000|-
+BE58|Beechcraft Baron 58|Beechcraft_Baron|g|L|2×ПД|11.5|9.1|2.5|380 км/год|1900|6|-|20700|-
+PA34|Piper PA-34 Seneca|Piper_PA-34_Seneca|g|L|2×ПД|11.8|8.7|2.1|320 км/год|1500|6|-|25000|-
+T38|Northrop T-38 Talon|Northrop_T-38_Talon|f|L|2×ТРД|7.7|14.1|5.5|M1.3|1300|2|-|55000|-
+L39|Aero L-39 Albatros|Aero_L-39_Albatros|f|L|1×ТРДД|9.5|12.1|4.7|750 км/год|1100|2|-|36000|-
+T6|Beechcraft T-6 Texan II|Beechcraft_T-6_Texan_II|f|L|1×ТВГД|10.2|10.2|3|586 км/год|1670|2|-|31000|-
+PC21|Pilatus PC-21|Pilatus_PC-21|f|L|1×ТВГД|9.1|11.2|3.1|685 км/год|1300|2|-|38000|-
+M346|Alenia Aermacchi M-346|Alenia_Aermacchi_M-346_Master|f|M|2×ТРДД|9.7|11.5|9.6|M1.15|2000|2|-|45500|-
+HAWK|BAE Hawk|BAE_Systems_Hawk|f|M|1×ТРДД|9.4|11.9|9.1|M1.2|2500|2|-|50000|-
+Y130|Як-130|Yakovlev_Yak-130|f|M|2×ТРДД|9.8|11.5|10.3|M1.05|2000|2|-|41000|-
+MG23|МіГ-23|Mikoyan-Gurevich_MiG-23|f|M|1×ТРДД|13.9|16.7|18.9|M2.35|2820|1|-|61000|-
+MG25|МіГ-25|Mikoyan-Gurevich_MiG-25|f|M|2×ТРД|14|19.8|36.7|M2.83|2500|1|-|67900|-
+MIRF|Dassault Mirage F1|Dassault_Mirage_F1|f|M|1×ТРДД|8.4|15|16.2|M2.2|3300|1|-|60000|-
+F117|Lockheed F-117 Nighthawk|Lockheed_F-117_Nighthawk|f|M|2×ТРДД|13.2|20.1|23.8|993 км/год|1720|1|-|45000|-
+J10|Chengdu J-10|Chengdu_J-10|f|M|1×ТРДД|9.8|16.4|19.3|M2.2|2700|1|-|59000|-
+J20|Chengdu J-20|Chengdu_J-20|f|M|2×ТРДД|12.9|20.3|37|M2.0|5500|1|-|65000|-
+JF17|PAC JF-17 Thunder|PAC_JF-17_Thunder|f|M|1×ТРДД|9.5|14|13.5|M1.6|3000|1|-|55000|-
+TEJA|HAL Tejas|HAL_Tejas|f|M|1×ТРДД|8.2|13.2|13.5|M1.6|3000|1|-|50000|-
+MQ1C|General Atomics MQ-1C Gray Eagle|General_Atomics_MQ-1C_Gray_Eagle|u|L|1×ПД|17|9|1.63|270 км/год|-|—|-|29000|-
+MQ9B|General Atomics MQ-9B SkyGuardian|General_Atomics_MQ-9B|u|L|1×ТВГД|24|11.7|5.67|390 км/год|11000|—|-|40000|-
+Q4C|Northrop Grumman MQ-4C Triton|Northrop_Grumman_MQ-4C_Triton|u|M|1×ТРДД|39.9|14.5|14.6|575 км/год|15200|—|-|56000|-
+RQ7|AAI RQ-7 Shadow|AAI_RQ-7_Shadow|u|L|1×ПД|4.3|3.4|0.17|204 км/год|125|—|-|15000|-
+HERN|IAI Heron|IAI_Heron|u|L|1×ПД|16.6|8.5|1.15|207 км/год|350|—|-|30000|-
+H900|Elbit Hermes 900|Elbit_Hermes_900|u|L|1×ПД|15|8.3|1.18|220 км/год|-|—|-|30000|-
+AKIN|Baykar Bayraktar Akıncı|Bayraktar_Akıncı|u|L|2×ТВГД|20|12.2|5.5|361 км/год|-|—|-|40000|-
+ANKA|TAI Anka|TAI_Anka|u|L|1×ПД|17.3|8.6|1.6|217 км/год|-|—|-|30000|-
+ORIO|Кронштадт Оріон|Kronshtadt_Orion|u|L|1×ПД|16|8|1.2|200 км/год|250|—|-|24600|-
+ORL1|Орлан-10|Orlan-10|u|L|1×ПД|3.1|1.8|0.018|150 км/год|600|—|-|16400|-
+SCNE|Insitu ScanEagle|Boeing_Insitu_ScanEagle|u|L|1×ПД|3.1|1.6|0.022|148 км/год|-|—|-|19500|-
+KA26|Ка-226|Kamov_Ka-226|h|L|2×ТВаД|13|8.1|3.6|210 км/год|570|1+7|-|18700|-
+KA32|Ка-32|Kamov_Ka-32|h|M|2×ТВаД|15.9|11.3|12.7|250 км/год|800|2+13|-|16400|-
+AH1|Bell AH-1Z Viper|Bell_AH-1Z_Viper|h|M|2×ТВаД|14.6|17.8|8.4|411 км/год|685|2|-|-|-
+UH1|Bell UH-1 Iroquois|Bell_UH-1_Iroquois|h|L|1×ТВаД|14.6|17.4|4.3|220 км/год|460|2+11|-|12600|-
+A109|AgustaWestland AW109|AgustaWestland_AW109|h|L|2×ТВаД|11|13|3.2|311 км/год|932|1+7|-|-|-
+B429|Bell 429|Bell_429_GlobalRanger|h|L|2×ТВаД|10.97|12.7|3.2|278 км/год|722|1+7|-|-|-
+B06|Bell 206 JetRanger|Bell_206|h|L|1×ТВаД|10.2|11.9|1.45|225 км/год|680|1+4|-|13500|288
+R22|Robinson R22|Robinson_R22|h|L|1×ПД|7.7|8.8|0.62|180 км/год|570|1+1|-|14000|-
+EC20|Airbus H120 (EC120)|Eurocopter_EC120_Colibri|h|L|1×ТВаД|10|11.5|1.7|223 км/год|710|1+4|-|18000|-
+S76|Sikorsky S-76|Sikorsky_S-76|h|L|2×ТВаД|13.4|16|5.3|287 км/год|761|2+12|-|15000|-`
+.split("\n").map(l=>{const a=l.split("|");return{id:a[0],n:a[1],w:a[2],c:a[3],t:a[4],e:a[5],sp:a[6],ln:a[7],m:a[8],v:a[9],r:a[10],s:a[11],fl:a[12],ce:a[13],fu:a[14]}});
+const CT={"":"Усі",j:"Реактивні",t:"Турбогвинтові",b:"Бізнес-джети",g:"Легкі",f:"Винищувачі / штурмовики",p:"Бомбардувальники",u:"БПЛА",m:"Військові: транспорт / спец.",h:"Вертольоти"},WT={L:"Light",M:"Medium",H:"Heavy",J:"Super"};
+const $=s=>document.getElementById(s),m=$("m"),det=$("det"),enc=encodeURIComponent,N=x=>Number(x).toLocaleString("uk"),u=(x,t)=>x==="-"?"—":x+t,
+esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),clean=t=>t.replace(/\[[^\]]*\]/g,"").replace(/\s+/g," ").trim();
+const spd=v=>v==="-"?"—":v[0]==="M"?v+" ≈ "+N(Math.round(parseFloat(v.slice(1))*106.2)*10)+" км/год":v;
+const ce=f=>f==="-"?"—":N(Math.round(f*.3048/10)*10)+" м ("+N(f)+" ft)";
+const cell=(k,v,c)=>`<div${c?' class="k"':""}><span>${k}</span><span>${v}</span></div>`;
+const FT=`<p class="ft">Локальна база — наближені дані (типові варіанти). FL — типовий крейсерський ешелон. Для актуальних даних скористайтеся пошуком вище (Wikipedia).</p>`;
+// ---------- розбір даних Wikipedia ----------
+const num=s=>parseFloat(String(s).replace(/[,\s]/g,""));
+const metric=t=>{const s=t.split(/[()]/).map(x=>x.trim()).filter(Boolean);if(s.length<2)return t;const r=s.find(x=>(/\b(km\/h|kg|km|tonnes?|litres?|liters?)\b|\d\s?(m|L|t)\b/.test(x))&&!/\b(mph|lb|nmi)\b/.test(x));if(!r)return t;let o=r.split(";")[0].trim();const mc=t.match(/Mach\s?[\d.]+/i);if(mc&&!/Mach/i.test(o))o+=" · "+mc[0];return o};
+const kg=t=>{let x;if(x=t.match(/([\d,]+(?:\.\d+)?)\s?(?:kg|кг)(?![\w])/))return num(x[1]);if(x=t.match(/([\d,.]+)\s?(?:tonnes?|т)(?![\w])/))return num(x[1])*1000;if(x=t.match(/([\d,]+)\s?lb/))return num(x[1])*.4536;return 0};
+const ft=t=>{let x;if(x=t.match(/([\d,]+)\s?ft/))return num(x[1]);if(x=t.match(/([\d,]+)\s?(?:m|м)(?![\w])/))return num(x[1])/.3048;if(x=t.match(/([\d,.]+)\s?km/))return num(x[1])*3280.84;return 0};
+const kmh=t=>{let x;if(x=t.match(/([\d,]+(?:\.\d+)?)\s?(?:km\/h|км\/год)/))return num(x[1]);if(x=t.match(/Mach\s?([\d.]+)/i))return num(x[1])*1062;return 0};
+const sT=t=>{if(!t)return"—";let r=metric(t);if(/Mach/i.test(r)&&!/km\/h|км/.test(r)){const v=kmh(r);if(v)r+=" ≈ "+N(Math.round(v/10)*10)+" км/год"}return esc(r)};
+const KEYS=[["rot",/rotor diameter|діаметр (несучого )?гвинта/i],["crew",/^(crew|flight crew|екіпаж)/i],["cap",/^(capacity|passengers|seating|typical seating|місткість|пасажири|пасажиромісткість)/i],["len",/^(length|довжина)/i],["span",/^(wingspan|wing span|span|розмах)/i],["hgt",/^(height|висота)/i],["mtow",/(max(imum)?\.? take-?off (weight|mass)|gross weight|maximum gross|злітна маса|максимальна злітна)/i],["oew",/^(empty weight|operating empty|маса порожн)/i],["fuel",/^(fuel capacity|fuel load|internal fuel|fuel|паливо|місткість паливних|запас палива)/i],["eng",/^(powerplant|power plant|engines?|двигун|силова)/i],["vmax",/^(max(imum)?\.? speed|top speed|максимальна швидкість|макс\. швидкість)/i],["vcr",/^(cruise speed|cruising speed|крейсерська швидкість)/i],["rng",/^(range|combat range|ferry range|operational range|дальність|практична дальність)/i],["ceil",/^(service ceiling|ceiling|operational ceiling|max(imum)? operating altitude|практична стеля|стеля)/i]];
+const rec=l=>{for(const[k,re]of KEYS)if(re.test(l))return k};
+const IB=[[/^(type|role|тип|призначення)/i,"Роль"],[/^(manufacturer|виробник)/i,"Виробник"],[/^(first flight|перший політ)/i,"Перший політ"],[/^(status|статус)/i,"Статус"],[/^(number built|produced|побудовано|кількість)/i,"Побудовано"]];
+function sets(d){const S={},ord=[];let h="";const add=(n,k,v)=>{if(!v)return;const o=S[n]||(S[n]={});if(!(k in o))o[k]=v;if(!ord.includes(n))ord.push(n)};
+ d.querySelectorAll("h2,h3,h4,ul,table").forEach(el=>{
+  if(/^H\d$/.test(el.tagName)){h=clean(el.textContent);return}
+  if(el.closest(".infobox,.navbox,.sidebar,.reflist,.mw-references-wrap,.hatnote"))return;
+  if(el.tagName==="UL"){el.querySelectorAll(":scope>li").forEach(li=>{const c=li.cloneNode(true);c.querySelectorAll("sup,.reference,ul").forEach(x=>x.remove());const t=clean(c.textContent),i=t.indexOf(":");if(i<2)return;const k=rec(t.slice(0,i).trim());if(k)add(h,k,t.slice(i+1).trim())})}
+  else if(el.classList.contains("wikitable")){const rows=[...el.querySelectorAll("tr")].map(r=>[...r.children].map(c=>{const z=c.cloneNode(true);z.querySelectorAll("sup,.reference").forEach(x=>x.remove());return clean(z.textContent)}));const hd=rows[0]||[];rows.forEach(r=>{if(r.length<2)return;const k=rec(r[0]);if(k)for(let i=1;i<r.length;i++)add(h+" · "+(hd[i]||i),k,r[i])})}});
+ return ord.filter(n=>Object.keys(S[n]).length>=4).map(n=>[n,S[n]])}
+function infobox(d){const o=[],t=d.querySelector("table.infobox");if(!t)return o;t.querySelectorAll("tr").forEach(r=>{const h=r.querySelector("th"),c=r.querySelector("td");if(!h||!c)return;const l=clean(h.textContent);for(const[re,n]of IB)if(re.test(l)&&!o.some(z=>z[0]===n)){o.push([n,clean(c.textContent).slice(0,100)]);break}});return o}
+const api=async(l,p)=>{const r=await fetch(`https://${l}.wikipedia.org/w/api.php?${p}&format=json&formatversion=2&origin=*`);if(!r.ok)throw 0;return r.json()};
+const TPL="Template:Aircraft specs|Template:Aircraft specification|Template:Infobox aircraft type|Template:Infobox aircraft begin";
+const AIR=/aircraft|airplane|airliner|helicopter|rotorcraft|fighter|bomber|drone|unmanned|uav|літак|гелікоптер|вертоліт|винищувач|бомбардувальник|безпілот|БПЛА|дрон/i;
+const sc=p=>{const t=(p.templates||[]).map(x=>x.title);return t.some(x=>/spec/i.test(x))?2:t.length?1:0};
+const one=(p,l)=>[{lang:l,t:p.title,d:p.description||"",i:p.thumbnail&&p.thumbnail.source}];
+// лише статті про конкретне ПС (з таблицею характеристик) — повертає 1 найкращий результат
+const ws=async(q)=>{const j=await api("en",`action=query&generator=search&gsrsearch=${enc(q)}&gsrnamespace=0&gsrlimit=15&prop=templates|pageimages|description&tltemplates=${enc(TPL)}&tllimit=max&piprop=thumbnail&pithumbsize=96`);
+ const s=((j.query&&j.query.pages)||[]).filter(sc).sort((a,b)=>sc(b)-sc(a)||a.index-b.index);return s.length?one(s[0],"en"):[]};
+const wsu=async(q)=>{const j=await api("uk",`action=query&generator=search&gsrsearch=${enc(q)}&gsrnamespace=0&gsrlimit=10&prop=langlinks|pageimages|description&lllang=en&lllimit=max&piprop=thumbnail&pithumbsize=96`);
+ const L=((j.query&&j.query.pages)||[]).sort((a,b)=>a.index-b.index),c=L.filter(p=>p.langlinks&&p.langlinks[0]);
+ if(c.length){const v=await api("en",`action=query&titles=${enc(c.map(p=>p.langlinks[0].title).join("|"))}&prop=templates&tltemplates=${enc(TPL)}&tllimit=max&redirects=1`),rd={};
+  (v.query.normalized||[]).concat(v.query.redirects||[]).forEach(r=>rd[r.from]=r.to);const fin=t=>{const x=rd[t]||t;return rd[x]||x},ok=new Set((v.query.pages||[]).filter(sc).map(p=>p.title)),h=c.find(p=>ok.has(fin(p.langlinks[0].title)));if(h)return one(h,"uk")}
+ const h=L.find(p=>AIR.test(p.description||""));return h?one(h,"uk"):[]};
+// ---------- локальна база ----------
+const card=a=>`<div class="c"><div class="p" data-w="${a.w}">✈</div><div class="b"><div class="tt"><span class="n">${a.n}</span><span class="cd">${a.id}</span></div><span class="w">WTC ${a.t} · ${WT[a.t]}</span><div class="g">${cell("Макс. висота (стеля)",ce(a.ce),1)}${cell("Крейсерський ешелон",a.fl==="-"?"—":"FL"+a.fl,1)}${cell("Швидкість",spd(a.v),1)}${cell("Паливо (місткість)",a.fu==="-"?"—":N(a.fu)+" л",1)}${cell("Двигуни",a.e)}${cell("Місць / екіпаж",a.s)}${cell(a.c==="h"?"Діаметр гвинта":"Розмах крила",u(a.sp," м"))}${cell("Довжина",u(a.ln," м"))}${cell("MTOW",u(a.m," т"))}${cell("Дальність",a.r==="-"?"—":N(a.r)+" км")}</div><a href="https://en.wikipedia.org/wiki/${a.w}" target="_blank" rel="noopener">Опис у Wikipedia ›</a></div></div>`;
+const ph={};
+function photo(w){if(ph[w])return ph[w];let c;try{c=localStorage.getItem("ph:"+w)}catch(x){}
+ if(c)return ph[w]=Promise.resolve(c);
+ return ph[w]=fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+w).then(r=>r.json()).then(j=>{const v=(j.thumbnail&&j.thumbnail.source)||"";try{if(v)localStorage.setItem("ph:"+w,v)}catch(x){}return v}).catch(()=>{delete ph[w];return""})}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const el=e.target;photo(el.dataset.w).then(v=>{if(v)el.innerHTML=`<img src="${v}" alt="" loading="lazy">`})}),{rootMargin:"300px"});
+const obs=()=>m.querySelectorAll(".p[data-w]").forEach(el=>io.observe(el));
+let cat="",rid=0,tm,cur;
+$("f").innerHTML=Object.keys(CT).map(k=>`<button data-k="${k}"${k===cat?' class="on"':""}>${CT[k]}</button>`).join("");
+$("f").onclick=e=>{const k=e.target.dataset.k;if(k===undefined)return;cat=k;[...$("f").children].forEach(b=>b.classList.toggle("on",b.dataset.k===k));draw()};
+function draw(){$("f").hidden=false;const L=R.filter(a=>!cat||a.c===cat);$("cnt").textContent=L.length+" типів у локальній базі (офлайн). Введіть назву — шукатиму у Wikipedia";m.innerHTML=L.map(card).join("")+FT;obs()}
+// ---------- пошук у Wikipedia ----------
+$("q").oninput=()=>{clearTimeout(tm);tm=setTimeout(go,400)};
+async function go(){const q=$("q").value.trim(),id=++rid;if(q.length<2){draw();return}
+ $("f").hidden=true;const ql=q.toLowerCase(),loc=R.filter(a=>(a.id+" "+a.n).toLowerCase().includes(ql)).slice(0,6);
+ $("cnt").textContent="Шукаю у Wikipedia…";let w=[],off=0;
+ try{const cy=/[а-яіїєґ]/i.test(q),ac=/aircraft|airplane|helicopter|drone|uav|jet|plane/i.test(q);
+  if(cy){w=await wsu(q);if(!w.length)w=await ws(q)}else{w=await ws(q+(ac?"":" aircraft"));if(!w.length&&!ac)w=await ws(q)}}catch(e){off=1}
+ if(id!==rid)return;
+ $("cnt").textContent=off?"Немає з'єднання — показано лише локальну базу":(w.length?"Wikipedia: найкращий збіг (стаття про ПС з характеристиками)":"У Wikipedia немає статті про ПС за цим запитом");
+ m.innerHTML=w.map(x=>`<button class="r" data-l="${x.lang}" data-t="${esc(x.t)}"><span class="th">${x.i?`<img src="${x.i}" alt="">`:"✈"}</span><span><b>${esc(x.t)}</b><small>${esc(x.d)}</small></span></button>`).join("")+(loc.length?`<h2 class="sec">У локальній базі (працює офлайн)</h2>`+loc.map(card).join(""):"")+(!w.length&&!loc.length?`<div class="em">Нічого не знайдено</div>`:"");obs()}
+m.onclick=e=>{const b=e.target.closest(".r");if(b)openA(b.dataset.l,b.dataset.t)};
+det.onclick=e=>{if(e.target.closest(".bk")){e.preventDefault();det.hidden=true;m.hidden=false}};
+det.onchange=e=>{if(e.target.id==="sel")render(+e.target.value)};
+const BK=`<a href="#" class="bk">‹ До результатів</a>`;
+async function openA(l,t){m.hidden=true;det.hidden=false;scrollTo(0,0);det.innerHTML=BK+`<div class="em">Завантажую з Wikipedia…</div>`;
+ try{let en=t,ukT=l==="uk"?t:null;
+  if(l==="uk"){const j=await api("uk",`action=query&titles=${enc(t)}&prop=langlinks&lllang=en&redirects=1`),p=j.query.pages[0];en=p.langlinks&&p.langlinks[0]?p.langlinks[0].title:null}
+  const sl=en?"en":"uk",st=en||t;
+  const[g,pr]=await Promise.all([api(sl,`action=query&titles=${enc(st)}&prop=pageimages|description|langlinks&piprop=thumbnail&pithumbsize=900&lllang=uk&redirects=1`),api(sl,`action=parse&page=${enc(st)}&prop=text&redirects=1&disablelimitreport=1`)]);
+  const p=g.query.pages[0];if(!ukT&&p.langlinks&&p.langlinks[0])ukT=p.langlinks[0].title;
+  const d=new DOMParser().parseFromString(pr.parse.text,"text/html"),enT=en?p.title:null;
+  cur={title:l==="uk"?t:p.title,alt:l==="uk"?enT:ukT,en:enT,uk:ukT,desc:p.description||"",img:p.thumbnail&&p.thumbnail.source,S:sets(d),ib:infobox(d)};render(0)
+ }catch(e){det.innerHTML=BK+`<div class="em">Не вдалося завантажити (потрібен інтернет).</div>`}}
+function render(i){const x=cur,s=x.S[i]?x.S[i][1]:{},g=k=>s[k],mt=k=>g(k)?esc(metric(g(k))):"—";
+ const km=g("mtow")?kg(g("mtow")):0,wt=km?(km<7000?"L":km<136000?"M":km<560000?"H":"J"):"",cf=g("ceil")?ft(g("ceil")):0;
+ const opt=(k,v)=>g(k)?cell(k,v):"";
+ det.innerHTML=BK+`<div class="c"><div class="p">${x.img?`<img src="${x.img}" alt="">`:"✈"}</div><div class="b"><div class="tt"><span class="n">${esc(x.title)}</span></div>${x.alt?`<div class="sb">${esc(x.alt)}</div>`:""}<div class="sb">${esc(x.desc)}</div>${wt?`<span class="w">WTC ${wt} · ${WT[wt]} (за MTOW)</span>`:""}`
+ +(x.S.length>1?`<select id="sel">${x.S.map((v,j)=>`<option value="${j}"${j===i?" selected":""}>${esc(v[0]||"Характеристики")}</option>`).join("")}</select>`:"")
+ +(x.S.length?"":`<p class="sb">Таблицю характеристик у статті не знайдено — відкрийте її у Wikipedia.</p>`)
+ +`<div class="g">${cell("Макс. висота (стеля)",cf?ce(Math.round(cf)):"—",1)}${cell("Макс. ешелон ≈",cf?"FL"+Math.floor(cf/1000)*10:"—",1)}${cell("Макс. швидкість",sT(g("vmax")),1)}${cell("Крейсерська швидкість",sT(g("vcr")),1)}${cell("Паливо (місткість)",mt("fuel"),1)}${cell("Двигуни",mt("eng"))}${g("crew")?cell("Екіпаж",mt("crew")):""}${g("cap")?cell("Місткість",mt("cap")):""}${g("rot")?cell("Діаметр гвинта",mt("rot")):cell("Розмах крила",mt("span"))}${cell("Довжина",mt("len"))}${g("hgt")?cell("Висота",mt("hgt")):""}${cell("Злітна маса (MTOW)",mt("mtow"))}${g("oew")?cell("Маса порожнього",mt("oew")):""}${cell("Дальність",mt("rng"))}</div>`
+ +(x.ib.length?`<div class="g">${x.ib.map(([k,v])=>cell(k,esc(v))).join("")}</div>`:"")
+ +`<div class="lk">${x.en?`<a href="https://en.wikipedia.org/wiki/${enc(x.en)}" target="_blank" rel="noopener">Wikipedia (EN) ›</a>`:""}${x.uk?` <a href="https://uk.wikipedia.org/wiki/${enc(x.uk)}" target="_blank" rel="noopener">Wikipedia (UK) ›</a>`:""}</div><p class="ft">Дані автоматично взято з Wikipedia (CC BY-SA), одиниці метричні. Ешелон ≈ розраховано за практичною стелею, WTC — за MTOW; прочерк — у статті цих даних немає. Для оперативної роботи звіряйте з офіційними джерелами.</p></div></div>`}
+draw();
+</script>
+<script src="ui.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
+</body></html>

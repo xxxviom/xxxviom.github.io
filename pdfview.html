@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f2a43"><link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>PDF</title>
+<style>
+:root{--bg:#0b1722;--card:#16304a;--ink:#e8f0f7;--mut:#a7bccd;--acc:#6bb6f0;--line:#24435f;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{flex:none;padding:10px 14px;border-bottom:1px solid var(--line);z-index:3}
+header a{color:var(--acc);text-decoration:none;font-weight:600;font-size:14px}
+h1{font-size:19px;margin:4px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tb{flex:none;display:flex;gap:6px;align-items:center;padding:6px 10px;background:rgba(8,19,30,.92);border-bottom:1px solid var(--line);z-index:3;flex-wrap:nowrap}
+#tb button,#sb2 button{flex:none;min-width:40px;height:38px;border-radius:10px;border:1px solid #3d6585;background:#1d3b57;color:#fff;font:600 16px system-ui,sans-serif;padding:0 8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#tb button:active,#sb2 button:active{background:#2b5478}
+#tb button[disabled],#sb2 button[disabled]{opacity:.4}
+#tb svg{display:block;margin:auto}
+#pgn{width:56px;height:38px;border-radius:10px;border:1px solid #3d6585;background:#0e2336;color:#fff;font:600 15px system-ui,sans-serif;text-align:center;padding:0}
+#pgt{font-size:14px;color:var(--mut);white-space:nowrap;margin-right:auto}
+#zl{min-width:58px!important;font-size:14px!important}
+#sb2{flex:none;display:none;gap:6px;align-items:center;padding:6px 10px;background:rgba(8,19,30,.96);border-bottom:1px solid var(--line);z-index:3}
+#sb2.on{display:flex}
+#q{flex:1;min-width:0;height:38px;border-radius:10px;border:1px solid #3d6585;background:#0e2336;color:#fff;font:16px system-ui,sans-serif;padding:0 10px;-webkit-appearance:none}
+#qc{font-size:13px;color:var(--mut);white-space:nowrap;min-width:54px;text-align:center}
+#sc{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior:contain;position:relative}
+#pages{display:flex;flex-direction:column;align-items:flex-start;padding:8px;width:max-content;min-width:100%;transform-origin:0 0}
+.pgw{position:relative;background:#fff;margin:0 auto 10px;box-shadow:0 2px 10px rgba(0,0,0,.5);flex:none}
+.pgw canvas{display:block;position:absolute;left:0;top:0;width:100%;height:100%}
+.pgw .num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#9aa8b5;font:600 14px system-ui,sans-serif}
+.textLayer{position:absolute;text-align:initial;inset:0;overflow:clip;opacity:1;line-height:1;-webkit-text-size-adjust:none;text-size-adjust:none;forced-color-adjust:none;transform-origin:0 0;z-index:1;--min-font-size:1;--text-scale-factor:calc(var(--total-scale-factor) * var(--min-font-size));--min-font-size-inv:calc(1 / var(--min-font-size))}
+.textLayer :is(span,br){color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%}
+.textLayer>:not(.markedContent),.textLayer .markedContent span:not(.markedContent){--font-height:0;font-size:calc(var(--text-scale-factor) * var(--font-height));--scale-x:1;--rotate:0deg;transform:rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv))}
+.textLayer .markedContent{display:contents}
+.textLayer ::selection{background:rgba(0,90,200,.35)}
+.textLayer mark{background:rgba(255,214,0,.55);color:transparent;border-radius:2px;padding:0}
+.textLayer mark.cur{background:rgba(255,120,0,.65);outline:2px solid #ff7a00}
+body>canvas{position:fixed!important;left:-99999px;top:0;pointer-events:none}
+#msg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--mut);pointer-events:none}
+#bar{position:absolute;left:0;top:0;height:3px;background:var(--acc);width:0;z-index:4;transition:width .2s}
+</style><link rel="stylesheet" href="ui.css"></head><body>
+<header><a id="bk" href="atc.html">‹ ATC</a><h1 id="t">PDF</h1></header>
+<div id="tb">
+ <button id="zo" aria-label="Зменшити">−</button><button id="zl" aria-label="По ширині">100%</button><button id="zi" aria-label="Збільшити">+</button>
+ <input id="pgn" type="text" inputmode="numeric" aria-label="Сторінка" value="1"><span id="pgt">/ –</span>
+ <button id="sbtn" aria-label="Пошук"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button>
+</div>
+<div id="sb2"><input id="q" type="search" placeholder="Пошук у документі…" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false"><span id="qc"></span><button id="qp" aria-label="Попереднє" disabled>▲</button><button id="qn" aria-label="Наступне" disabled>▼</button><button id="qx" aria-label="Закрити">✕</button></div>
+<div id="bar"></div>
+<div id="sc"><div id="pages"></div><div id="msg">Завантаження…</div></div>
+<script type="module">
+import * as pdfjsLib from "./lib/pdf.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("./lib/pdf.worker.min.js", import.meta.url).href;
+const DOCS = {
+  sera: { f: "pdf/sera.pdf", t: "SERA" },
+  doc4444: { f: "pdf/doc4444.pdf", t: "Doc 4444" }
+};
+const $ = s => document.getElementById(s);
+const qs = new URLSearchParams(location.search), id = qs.get("d") in DOCS ? qs.get("d") : "sera", D = DOCS[id];
+$("t").textContent = D.t; document.title = D.t;
+const sc = $("sc"), pages = $("pages"), msg = $("msg"), bar = $("bar");
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+let pdf, N = 0, base = null, zoom = 1, fitW = 1, P = [];   // P[i] = {el, w, h, state, task, canvas, tl, divs, strs}
+const ZMIN = .5, ZMAX = 5;
+const KEY = "pdfpg:" + id, ZKEY = "pdfz:" + id;
+
+function cssScale() { return fitW * zoom }
+function setLabel() { $("zl").textContent = Math.round(zoom * 100) + "%" }
+
+function layout() {
+  const s = cssScale();
+  P.forEach(p => { p.el.style.width = Math.floor(p.w * s) + "px"; p.el.style.height = Math.floor(p.h * s) + "px"; p.el.style.setProperty("--total-scale-factor", s); p.el.style.setProperty("--scale-factor", s) });
+}
+
+async function open() {
+  try {
+    const task = pdfjsLib.getDocument({ url: D.f, disableRange: true, disableStream: true, isEvalSupported: false });
+    task.onProgress = e => { if (e.total) bar.style.width = Math.round(e.loaded / e.total * 100) + "%" };
+    pdf = await task.promise; bar.style.width = "0";
+  } catch (e) {
+    msg.textContent = "Не вдалося відкрити документ: " + (e && e.message || e); return;
+  }
+  N = pdf.numPages;
+  const p1 = await pdf.getPage(1), v = p1.getViewport({ scale: 1 });
+  base = { w: v.width, h: v.height };
+  $("pgt").textContent = "/ " + N;
+  fitW = Math.max(.2, (sc.clientWidth - 16) / base.w);
+  try { const z = parseFloat(localStorage.getItem(ZKEY)); if (z >= ZMIN && z <= ZMAX) zoom = z } catch (e) {}
+  for (let i = 0; i < N; i++) {
+    const el = document.createElement("div"); el.className = "pgw"; el.dataset.i = i;
+    el.innerHTML = '<span class="num">' + (i + 1) + "</span>";
+    pages.appendChild(el);
+    P.push({ el, w: base.w, h: base.h, st: 0, hl: [] });
+    io.observe(el);
+  }
+  layout(); setLabel(); msg.remove();
+  let start = 1; try { start = Math.min(N, Math.max(1, parseInt(localStorage.getItem(KEY)) || 1)) } catch (e) {}
+  if (start > 1) goPage(start, true);
+  buildIndex();
+}
+
+/* ---------- lazy rendering ---------- */
+const io = new IntersectionObserver(es => {
+  es.forEach(e => { const p = P[+e.target.dataset.i]; if (e.isIntersecting) { p.vis = true; enqueue(p) } else { p.vis = false; release(p) } });
+}, { root: sc, rootMargin: "120% 0px 120% 0px" });
+
+let queue = [], busy = false;
+function enqueue(p) { if (p.st === 0 && !queue.includes(p)) { queue.push(p); pump() } else if (p.st === 2 && p.rs !== cssScale()) { rerender(p) } }
+async function pump() {
+  if (busy) return; busy = true;
+  while (queue.length) {
+    const cur = pageNow();
+    queue.sort((a, b) => Math.abs(P.indexOf(a) - cur) - Math.abs(P.indexOf(b) - cur));
+    const p = queue.shift(); if (!p.vis || p.st !== 0) continue;
+    try { await render(p) } catch (e) { if (!(e && e.name === "RenderingCancelledException")) console.warn(e); p.st = 0 }
+  }
+  busy = false;
+}
+function rerender(p) { release(p); enqueue(p) }
+function release(p) {
+  p.gen = (p.gen || 0) + 1;
+  if (p.task) { try { p.task.cancel() } catch (e) {} p.task = null }
+  if (p.tlTask) { try { p.tlTask.cancel() } catch (e) {} p.tlTask = null }
+  if (p.canvas) { p.canvas.width = p.canvas.height = 0; p.canvas.remove(); p.canvas = null }
+  if (p.tlEl) { p.tlEl.remove(); p.tlEl = null }
+  p.divs = null; p.st = 0;
+  const i = queue.indexOf(p); if (i >= 0) queue.splice(i, 1);
+}
+async function render(p) {
+  const i = P.indexOf(p); p.st = 1; const g = p.gen = (p.gen || 0) + 1;
+  const page = await pdf.getPage(i + 1), s = cssScale();
+  if (p.gen !== g || p.st !== 1) return;
+  const v1 = page.getViewport({ scale: 1 });
+  if (Math.abs(v1.width - p.w) > .5 || Math.abs(v1.height - p.h) > .5) { p.w = v1.width; p.h = v1.height; layout() }
+  const vp = page.getViewport({ scale: s * DPR });
+  let k = 1; const MAXPX = 16e6, px = vp.width * vp.height; if (px > MAXPX) k = Math.sqrt(MAXPX / px);
+  const vpr = page.getViewport({ scale: s * DPR * k });
+  const cv = document.createElement("canvas"); cv.width = Math.floor(vpr.width); cv.height = Math.floor(vpr.height);
+  p.task = page.render({ canvasContext: cv.getContext("2d", { alpha: false }), viewport: vpr, background: "#ffffff" });
+  await p.task.promise; p.task = null;
+  if (p.gen !== g || p.st !== 1) { cv.width = cv.height = 0; return }
+  const ph = p.el.querySelector(".num"); if (ph) ph.remove();
+  p.el.insertBefore(cv, p.el.firstChild); p.canvas = cv; p.rs = s;
+  // text layer
+  const tl = document.createElement("div"); tl.className = "textLayer"; p.el.appendChild(tl); p.tlEl = tl;
+  const vpl = page.getViewport({ scale: s });
+  const content = await page.getTextContent();
+  if (p.gen !== g || p.st !== 1) { tl.remove(); return }
+  const layer = new pdfjsLib.TextLayer({ textContentSource: content, container: tl, viewport: vpl });
+  p.tlTask = layer; await layer.render(); p.tlTask = null;
+  p.divs = layer.textDivs; p.strs = layer.textContentItemsStr; p.st = 2;
+  highlight(i);
+  if (pendingScroll === i) { pendingScroll = -1; showCur() }
+}
+
+/* ---------- navigation ---------- */
+function pageNow() {
+  const mid = sc.scrollTop + sc.clientHeight * .35; let lo = 0, hi = N - 1;
+  while (lo < hi) { const m = (lo + hi + 1) >> 1; if (P[m].el.offsetTop - 4 <= mid) lo = m; else hi = m - 1 }
+  return lo;
+}
+function goPage(n, instant) {
+  n = Math.min(N, Math.max(1, n)); const el = P[n - 1].el;
+  sc.scrollTo({ top: el.offsetTop - 6, behavior: instant ? "auto" : "auto" });
+  $("pgn").value = n;
+}
+let st = 0;
+sc.addEventListener("scroll", () => {
+  if (st) return; st = setTimeout(() => { st = 0; if (!P.length) return; const n = pageNow() + 1; if (document.activeElement !== $("pgn")) $("pgn").value = n; try { localStorage.setItem(KEY, n) } catch (e) {} }, 120);
+}, { passive: true });
+$("pgn").addEventListener("focus", e => e.target.select());
+$("pgn").addEventListener("keydown", e => { if (e.key === "Enter") { goPage(parseInt(e.target.value) || 1); e.target.blur() } });
+$("pgn").addEventListener("change", e => goPage(parseInt(e.target.value) || 1));
+
+/* ---------- zoom ---------- */
+function applyZoom(nz, cx, cy) {
+  nz = Math.min(ZMAX, Math.max(ZMIN, nz)); if (Math.abs(nz - zoom) < .001) return;
+  const r = nz / zoom, px = sc.scrollLeft + cx, py = sc.scrollTop + cy, pn = pageNow();
+  zoom = nz; layout(); setLabel();
+  sc.scrollLeft = px * r - cx; sc.scrollTop = py * r - cy;
+  try { localStorage.setItem(ZKEY, zoom) } catch (e) {}
+  clearTimeout(applyZoom.t);
+  applyZoom.t = setTimeout(() => P.forEach(p => { if (p.vis && p.st === 2 && p.rs !== cssScale()) rerender(p); else if (p.st === 2 && p.rs !== cssScale()) release(p) }), 180);
+}
+const cc = () => [sc.clientWidth / 2, sc.clientHeight / 2];
+$("zi").onclick = () => applyZoom(zoom * 1.25, ...cc());
+$("zo").onclick = () => applyZoom(zoom / 1.25, ...cc());
+$("zl").onclick = () => applyZoom(zoom > 1.02 || zoom < .98 ? 1 : 2, ...cc());
+sc.addEventListener("wheel", e => { if (e.ctrlKey) { e.preventDefault(); const r = sc.getBoundingClientRect(); applyZoom(zoom * Math.exp(-e.deltaY * .01), e.clientX - r.left, e.clientY - r.top) } }, { passive: false });
+// pinch
+let pin = null;
+const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+sc.addEventListener("touchstart", e => {
+  if (e.touches.length === 2) { const r = sc.getBoundingClientRect(); pin = { d: dist(e.touches), z: zoom, cx: (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left, cy: (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top, nz: zoom }; }
+}, { passive: true });
+sc.addEventListener("touchmove", e => {
+  if (pin && e.touches.length === 2) {
+    e.preventDefault();
+    pin.nz = Math.min(ZMAX, Math.max(ZMIN, pin.z * dist(e.touches) / pin.d));
+    const f = pin.nz / zoom; pages.style.transformOrigin = (sc.scrollLeft + pin.cx) + "px " + (sc.scrollTop + pin.cy) + "px";
+    pages.style.transform = "scale(" + f + ")";
+  }
+}, { passive: false });
+function endPinch() { if (!pin) return; const p = pin; pin = null; pages.style.transform = ""; pages.style.transformOrigin = "0 0"; applyZoom(p.nz, p.cx, p.cy) }
+sc.addEventListener("touchend", e => { if (pin && e.touches.length < 2) endPinch() }, { passive: true });
+sc.addEventListener("touchcancel", () => { if (pin) endPinch() }, { passive: true });
+// double tap
+let lt = 0, lx = 0, ly = 0;
+sc.addEventListener("touchend", e => {
+  if (pin || e.changedTouches.length !== 1 || e.touches.length) return;
+  const t = e.changedTouches[0], now = Date.now();
+  if (now - lt < 320 && Math.abs(t.clientX - lx) < 24 && Math.abs(t.clientY - ly) < 24) {
+    const r = sc.getBoundingClientRect(); lt = 0; applyZoom(zoom > 1.3 ? 1 : 2.2, t.clientX - r.left, t.clientY - r.top);
+  } else { lt = now; lx = t.clientX; ly = t.clientY }
+}, { passive: true });
+sc.addEventListener("dblclick", e => { const r = sc.getBoundingClientRect(); applyZoom(zoom > 1.3 ? 1 : 2.2, e.clientX - r.left, e.clientY - r.top) });
+addEventListener("resize", () => { if (!base) return; const n = Math.max(.2, (sc.clientWidth - 16) / base.w); if (Math.abs(n - fitW) > .01) { fitW = n; layout(); P.forEach(p => { if (p.st === 2) rerender(p) }) } });
+
+/* ---------- search ---------- */
+const T = [];          // T[i] = {text, starts}
+let indexed = 0, M = [], cur = -1, pendingScroll = -1, qre = null, runId = 0;
+async function buildIndex() {
+  const my = ++runId;
+  for (let i = 0; i < N; i++) {
+    if (T[i]) { indexed = i + 1; continue }
+    const pg = await pdf.getPage(i + 1), c = await pg.getTextContent();
+    let text = "", starts = [];
+    for (const it of c.items) { if (typeof it.str !== "string") continue; starts.push(text.length); text += it.str; if (it.hasEOL) text += " " }
+    T[i] = { text, starts }; indexed = i + 1; pg.cleanup();
+    if (i % 25 === 0) { if (qre) { setStatus() } await new Promise(r => setTimeout(r, 0)) }
+  }
+  if (qre) { runSearch(true) }
+}
+function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") }
+function runSearch(keep) {
+  const v = $("q").value.trim();
+  M = []; qre = null;
+  if (v.length < 2) { cur = -1; refreshAll(); setStatus(); return }
+  qre = new RegExp(v.split(/\s+/).map(esc).join("\\s*"), "gi");
+  const prev = keep && cur >= 0 ? M[cur] : null;
+  for (let i = 0; i < indexed && M.length < 5000; i++) {
+    const t = T[i]; if (!t) continue; qre.lastIndex = 0; let m;
+    while ((m = qre.exec(t.text)) && M.length < 5000) { if (m[0].length === 0) { qre.lastIndex++; continue } M.push({ p: i, s: m.index, e: m.index + m[0].length }) }
+  }
+  if (prev) { const k = M.findIndex(x => x.p === prev.p && x.s === prev.s); cur = k >= 0 ? k : (M.length ? 0 : -1) }
+  else cur = M.length ? 0 : -1;
+  refreshAll(); setStatus();
+  if (!keep && cur >= 0) gotoMatch(cur, true);
+}
+function setStatus() {
+  const v = $("q").value.trim(), done = indexed >= N;
+  let s = "";
+  if (v.length >= 2) s = M.length ? (cur + 1) + " / " + M.length + (M.length >= 5000 ? "+" : "") : (done ? "0" : "…");
+  if (!done && v.length >= 2) s += " ·" + Math.round(indexed / N * 100) + "%";
+  $("qc").textContent = s; $("qp").disabled = $("qn").disabled = !M.length;
+}
+function highlight(i) {
+  const p = P[i]; if (!p.divs) return;
+  const t = T[i], ms = qre ? M.filter(m => m.p === i) : [];
+  const divs = p.divs, strs = p.strs;
+  // restore
+  (p.hl || []).forEach(j => { if (divs[j]) divs[j].textContent = strs[j] }); p.hl = [];
+  if (!ms.length || !t || t.starts.length !== divs.length) return;
+  let j = 0;
+  for (const m of ms) {
+    while (j < divs.length - 1 && t.starts[j + 1] <= m.s) j++;
+    for (let k = j; k < divs.length && t.starts[k] < m.e; k++) {
+      const a = t.starts[k], len = strs[k].length; if (a + len <= m.s) continue;
+      (p.mk = p.mk || {}); (p.mk[k] = p.mk[k] || []).push({ a: Math.max(m.s, a) - a, b: Math.min(m.e, a + len) - a, cur: M[cur] === m });
+    }
+  }
+  for (const k in (p.mk || {})) {
+    const segs = p.mk[k], s = strs[k]; let h = "", pos = 0;
+    segs.sort((x, y) => x.a - y.a);
+    for (const g of segs) { if (g.a < pos) continue; h += e2(s.slice(pos, g.a)) + '<mark' + (g.cur ? ' class="cur"' : '') + '>' + e2(s.slice(g.a, g.b)) + '</mark>'; pos = g.b }
+    h += e2(s.slice(pos)); divs[k].innerHTML = h; p.hl.push(+k);
+  }
+  p.mk = null;
+}
+const e2 = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function refreshAll() { P.forEach((p, i) => { if (p.st === 2) highlight(i) }) }
+function showCur() {
+  const m = M[cur]; if (!m) return; const p = P[m.p]; if (p.st !== 2) { pendingScroll = m.p; return }
+  const el = p.el.querySelector("mark.cur");
+  if (el) {
+    const r = el.getBoundingClientRect(), sr = sc.getBoundingClientRect();
+    sc.scrollTop += r.top - sr.top - sc.clientHeight * .35;
+    if (r.left < sr.left || r.right > sr.right) sc.scrollLeft += r.left - sr.left - sc.clientWidth * .3;
+    $("pgn").value = m.p + 1;
+  }
+}
+function gotoMatch(k, first) {
+  if (!M.length) return;
+  const old = cur; cur = (k + M.length) % M.length;
+  if (old >= 0 && M[old] && P[M[old].p].st === 2) highlight(M[old].p);
+  const m = M[cur]; pendingScroll = m.p;
+  const p = P[m.p]; if (p.st === 2) highlight(m.p);
+  goPage(m.p + 1, true); setStatus();
+  if (p.st === 2) { pendingScroll = -1; showCur() }
+}
+let qt = 0;
+$("q").addEventListener("input", () => { clearTimeout(qt); qt = setTimeout(() => runSearch(false), 280) });
+$("q").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); clearTimeout(qt); if (!qre || !M.length) runSearch(false); else gotoMatch(cur + (e.shiftKey ? -1 : 1)) } });
+$("qn").onclick = () => gotoMatch(cur + 1);
+$("qp").onclick = () => gotoMatch(cur - 1);
+$("sbtn").onclick = () => { $("sb2").classList.add("on"); $("q").focus(); $("q").select() };
+$("qx").onclick = () => { $("sb2").classList.remove("on"); $("q").value = ""; runSearch(false) };
+open();
+</script>
+<script src="ui.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
+</body></html>

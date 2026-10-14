@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f2a43"><link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Карти дій EMG</title>
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--ink:#12212f;--mut:#5d7083;--acc:#0f5f9c;--line:#d9e2ea;--red:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1722;--card:#13273a;--ink:#e6eef5;--mut:#8fa5b8;--acc:#6bb6f0;--line:#223a50;--red:#ef6a5b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 14px;border-bottom:1px solid var(--line);z-index:2}
+header a{color:var(--acc);text-decoration:none;font-weight:600;font-size:14px}
+h1{font-size:19px;margin:4px 0 0}
+main{max-width:760px;margin:0 auto;padding:10px 14px 30px}
+
+.cd{font:700 16px ui-monospace,Menlo,monospace;background:#b8392b;color:#fff;border-radius:14px;padding:6px 10px;flex:none}
+.s{font-size:13px;color:var(--mut)}
+.pg{overflow:auto;border:1px solid var(--line);border-radius:6px;margin-bottom:12px;background:#fff;-webkit-overflow-scrolling:touch}
+.pg img{display:block;width:100%;height:auto}
+.pg.z img{width:230%;max-width:none}
+.h{font-size:13px;color:var(--mut);margin:0 0 8px}
+</style><link rel="stylesheet" href="ui.css"></head><body>
+<header><a id="bk" href="atc.html">‹ Меню</a><h1 id="t"></h1></header>
+<main id="m"></main>
+<script>
+const D={"gen": ["img/g7.png", "img/g8.png", "img/g9.png", "img/g10.png", "img/g11.png"], "cards": [{"id": "A01", "ua": "ACAS / TCAS", "en": "ACAS / TCAS", "p": ["img/A01_1.png", "img/A01_2.png"]}, {"id": "A02", "ua": "Зіткнення з птахом", "en": "Birdstrike", "p": ["img/A02_1.png", "img/A02_2.png"]}, {"id": "A03", "ua": "Загроза вибуху", "en": "Bomb Warning", "p": ["img/A03_1.png", "img/A03_2.png"]}, {"id": "A04", "ua": "Проблеми з гальмівною системою ПС", "en": "Brake Problems", "p": ["img/A04_1.png", "img/A04_2.png"]}, {"id": "A05", "ua": "Відмова радіозв’язку", "en": "Communication failure", "p": ["img/A05_1.png", "img/A05_2.png", "img/A05_3.png", "img/A05_4.png"]}, {"id": "A06", "ua": "Проблеми з системою електропостачання", "en": "Electrical Problems", "p": ["img/A06_1.png", "img/A06_2.png"]}, {"id": "A07", "ua": "Аварійне зниження", "en": "Emergency Descent", "p": ["img/A07_1.png", "img/A07_2.png"]}, {"id": "A08", "ua": "Відмова двигуна", "en": "Engine Failure", "p": ["img/A08_1.png", "img/A08_2.png"]}, {"id": "A09", "ua": "Пожежа двигуна або пожежа ДСУ", "en": "Engine on Fire or APU on Fire", "p": ["img/A09_1.png", "img/A09_2.png"]}, {"id": "A10", "ua": "Проблеми з паливом. Критичний залишок палива", "en": "Fuel Problems – Critical Fuel Status", "p": ["img/A10_1.png", "img/A10_2.png"]}, {"id": "A11", "ua": "Проблеми з шасі", "en": "Gear Problems", "p": ["img/A11_1.png", "img/A11_2.png"]}, {"id": "A12", "ua": "Проблеми з гідравлічною системою", "en": "Hydraulic Problems", "p": ["img/A12_1.png", "img/A12_2.png"]}, {"id": "A13", "ua": "Обмерзання", "en": "Icing", "p": ["img/A13_1.png", "img/A13_2.png"]}, {"id": "A14", "ua": "Проблеми з герметизацією ПС", "en": "Pressurisation Problems", "p": ["img/A14_1.png", "img/A14_2.png"]}, {"id": "A15", "ua": "Дим або вогонь у кабіні екіпажу / салоні", "en": "Smoke or Fire in the Cockpit / Cabin", "p": ["img/A15_1.png", "img/A15_2.png"]}, {"id": "A16", "ua": "Незаконне втручання", "en": "Unlawful Interference", "p": ["img/A16_1.png", "img/A16_2.png"]}, {"id": "A17", "ua": "Зливання палива", "en": "Fuel Dumping", "p": ["img/A17_1.png", "img/A17_2.png"]}, {"id": "A18", "ua": "Аварійна посадка / Посадка поза аеродромом", "en": "Emergency, External Landing", "p": ["img/A18_1.png", "img/A18_2.png"]}, {"id": "A19", "ua": "Перерваний зліт", "en": "Take-off Abort", "p": ["img/A19_1.png", "img/A19_2.png"]}, {"id": "A20", "ua": "Низький тиск мастила", "en": "Low Oil Pressure", "p": ["img/A20_1.png", "img/A20_2.png"]}, {"id": "A21", "ua": "Втрата працездатності пілота", "en": "Pilot Incapacitation", "p": ["img/A21_1.png", "img/A21_2.png"]}]},$=s=>document.getElementById(s),m=$("m");
+const imgs=a=>`<p class="h">Торкніться сторінки, щоб збільшити / Tap a page to zoom</p>`+a.map(s=>`<div class="pg"><img src="${s}" loading="lazy" alt=""></div>`).join("");
+function route(){const h=location.hash.slice(1),c=D.cards.find(x=>x.id===h);
+ $("bk").href=h?"#":"atc.html";$("bk").textContent=h?"‹ Усі карти":"‹ ATC";scrollTo(0,0);
+ if(h==="gen"){$("t").textContent="Загальні положення / ASSIST";m.innerHTML=imgs(D.gen)}
+ else if(c){$("t").textContent=c.id+" · "+c.ua;document.title=c.ua;m.innerHTML=imgs(c.p)}
+ else{$("t").textContent="Карти дій EMG";document.title="Карти дій EMG";
+  m.innerHTML=`<a class="it" href="#gen"><span class="cd" style="background:#1d5f94">ASSIST</span><span>Загальні положення, ASSIST, бланк аварійної інформації<div class="s">General provisions, ASSIST, Emergency information list</div></span></a>`+D.cards.map(c=>`<a class="it" href="#${c.id}"><span class="cd">${c.id}</span><span>${c.ua}<div class="s">${c.en}</div></span></a>`).join("")}}
+m.onclick=e=>{const g=e.target.closest(".pg");if(g)g.classList.toggle("z")};
+addEventListener("hashchange",route);route();
+</script>
+<script src="ui.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
+</body></html>

@@ -1,0 +1,2 @@
+/* Approach categories per runway end: {ICAO:{"09L":"CAT III",...}}. Rebuild with tools/build_ils.py */
+window.ILS={"EGLL":{"09L":"CAT III","09R":"CAT III","27L":"CAT III","27R":"CAT III"},"LFPG":{"08L":"CAT III","08R":"CAT III","09L":"CAT III","09R":"CAT III","26L":"CAT III","26R":"CAT III","27L":"CAT III","27R":"CAT III"},"EDDF":{"07C":"CAT III","07L":"CAT III","07R":"CAT III","25C":"CAT III","25L":"CAT III","25R":"CAT III"},"EDDM":{"08L":"CAT III","08R":"CAT III","26L":"CAT III","26R":"CAT III"}};

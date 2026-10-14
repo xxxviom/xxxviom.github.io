@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f2a43"><link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>OJTI &amp; Assesor</title>
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--ink:#12212f;--mut:#5d7083;--acc:#0f5f9c;--line:#d9e2ea;--red:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1722;--card:#13273a;--ink:#e6eef5;--mut:#8fa5b8;--acc:#6bb6f0;--line:#223a50;--red:#ef6a5b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 14px;border-bottom:1px solid var(--line);z-index:2}
+header a{color:var(--acc);text-decoration:none;font-weight:600;font-size:14px}
+h1{font-size:19px;margin:4px 0 0}
+main{max-width:760px;margin:0 auto;padding:10px 14px 30px}
+
+.cd{font:700 15px ui-monospace,Menlo,monospace;background:#1d5f94;color:#fff;border-radius:14px;padding:8px 10px;flex:none;min-width:64px;text-align:center}
+.t{font-weight:700}
+.s{font-size:13px;color:var(--mut)}
+.pg{overflow:auto;border:1px solid var(--line);border-radius:6px;margin-bottom:12px;background:#fff;-webkit-overflow-scrolling:touch}
+.pg img{display:block;width:100%;height:auto}
+.pg.z img{width:230%;max-width:none}
+.h{font-size:13px;color:var(--mut);margin:0 0 8px}
+</style><link rel="stylesheet" href="ui.css"></head><body>
+<header><a id="bk" href="index.html">‹ Меню</a><h1 id="t"></h1></header>
+<main id="m"></main>
+<script>
+const D=[
+{id:"ojti",cd:"OJTi",ua:"OJTi memo",s:"Інструктаж, розбір, протоколи оцінювання (4 стор.)",p:["img/o1.png","img/o2.png","img/o3.png","img/o4.png"]},
+{id:"assessor",cd:"ASSR",ua:"Assesor memo",s:"Курс підготовки експертів, Додаток 3: розбір, інструктаж (2 стор.)",p:["img/s1.png","img/s2.png"]},
+{id:"coach",cd:"C-R",ua:"Coach - Radar",s:"Сектор CN/TCC: схема, повітряний простір, процедури УПР, щільність руху (3 стор.)",p:["img/c1.png","img/c2.png","img/c3.png"]}
+],$=s=>document.getElementById(s),m=$("m");
+const imgs=a=>`<p class="h">Торкніться сторінки, щоб збільшити / Tap a page to zoom</p>`+a.map(s=>`<div class="pg"><img src="${s}" loading="lazy" alt=""></div>`).join("");
+function route(){const h=location.hash.slice(1),c=D.find(x=>x.id===h);
+ $("bk").href=c?"#":"index.html";$("bk").textContent=c?"‹ OJTI & Assesor":"‹ Меню";scrollTo(0,0);
+ if(c){$("t").textContent=c.ua;document.title=c.ua;m.innerHTML=imgs(c.p)}
+ else{$("t").textContent="OJTI & Assesor";document.title="OJTI & Assesor";
+  m.innerHTML=D.map(c=>`<a class="it" href="#${c.id}"><span class="cd">${c.cd}</span><span><div class="t">${c.ua}</div><div class="s">${c.s}</div></span></a>`).join("")}}
+m.onclick=e=>{const g=e.target.closest(".pg");if(g)g.classList.toggle("z")};
+addEventListener("hashchange",route);route();
+</script>
+<script src="ui.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
+</body></html>
